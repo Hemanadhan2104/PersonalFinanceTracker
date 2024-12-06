@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task List</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      main {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+
+      section h2 {
+        margin-bottom: 10px;
+      }
+
+      .task {
+        background-color: #f9f9f9;
+        border-radius: 5px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Task List</h1>
+      <nav>
+        <ul>
+          <li><a href="dashboard_task.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section id="pending-tasks">
+        <h2>Pending Tasks</h2>
+        <div id="pending-task-list"></div>
+      </section>
+
+      <section id="completed-tasks">
+        <h2>Completed Tasks</h2>
+        <div id="completed-task-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2024 Task Manager</p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const pendingTaskListDiv = document.getElementById("pending-task-list");
+        const completedTaskListDiv = document.getElementById(
+          "completed-task-list"
+        );
+        const allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const userId = localStorage.getItem("userId");
+        const userTasks = allTasks.filter((task) => task.userId === userId);
+        const pendingTasks = userTasks.filter(
+          (task) => new Date(task.dueDateTime) > new Date()
+        );
+        const completedTasks = userTasks.filter(
+          (task) => new Date(task.dueDateTime) <= new Date()
+        );
+
+        displayTasks(pendingTasks, pendingTaskListDiv);
+        displayTasks(completedTasks, completedTaskListDiv);
+        const completedTasksCount = completedTasks.length;
+        const pendingTasksCount = pendingTasks.length;
+        localStorage.setItem("completedTasks", completedTasksCount);
+        localStorage.setItem("pendingTasks", pendingTasksCount);
+      });
+
+      function displayTasks(tasks, container) {
+        if (tasks.length === 0) {
+          container.innerHTML = "<p>No tasks found.</p>";
+          return;
+        }
+
+        tasks.forEach((task) => {
+          const taskDiv = createTaskDiv(task);
+          container.appendChild(taskDiv);
+        });
+      }
+
+      function createTaskDiv(taskData) {
+        const taskDiv = document.createElement("div");
+        taskDiv.classList.add("task");
+        taskDiv.innerHTML = `
+        <h3>${taskData.title}</h3>
+        <p>Description: ${taskData.description}</p>
+        <p>Due Date and Time: ${formatDateTime(taskData.dueDateTime)}</p>
+        <p>Priority: ${taskData.priority}</p>
+      `;
+        return taskDiv;
+      }
+
+      function formatDateTime(dateTimeString) {
+        const options = {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+        };
+        return new Date(dateTimeString).toLocaleString(undefined, options);
+      }
+    </script>
+  </body>
+</html>

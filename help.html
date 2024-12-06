@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Tracker - Help/FAQ</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 1rem;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      section.help {
+        padding: 2rem;
+      }
+
+      #accordion {
+        margin-top: 1rem;
+      }
+
+      .accordion {
+        background-color: #eee;
+        color: #333;
+        cursor: pointer;
+        padding: 1rem;
+        width: 100%;
+        text-align: left;
+        border: none;
+        outline: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .panel {
+        padding: 0 1rem;
+        background-color: white;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.2s ease-out;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Personal Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="help">
+      <h2>Help/FAQ</h2>
+      <div id="accordion">
+        <div class="faq-item">
+          <button class="accordion">What is Personal Finance Tracker?</button>
+          <div class="panel">
+            <p>
+              Personal Finance Tracker is a web application designed to help you
+              track your income, expenses, savings goals, and more to manage
+              your finances effectively.
+            </p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="accordion">
+            How can I add a new income or expense?
+          </button>
+          <div class="panel">
+            <p>
+              To add a new income or expense, navigate to the respective pages
+              from the navigation menu. Then, use the provided form to input the
+              details and submit.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2024 Personal Finance Tracker</p>
+    </footer>
+
+    <script>
+      var acc = document.getElementsByClassName("accordion");
+
+      for (var i = 0; i < acc.length; i++) {
+        acc[i].addEventListener("click", function () {
+          this.classList.toggle("active");
+
+          var panel = this.nextElementSibling;
+          if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+          } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Tracker - Expenses</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 1rem;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      section.expenses {
+        padding: 2rem;
+      }
+
+      #expenseForm {
+        margin-bottom: 1rem;
+      }
+
+      #expenseTable {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      #expenseTable th,
+      #expenseTable td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      #expenseTable th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Personal Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="expenses">
+      <h2>Expense Tracking</h2>
+      <form id="expenseForm">
+        <label for="expenseDescription">Description:</label>
+        <input
+          type="text"
+          id="expenseDescription"
+          name="expenseDescription"
+          required
+        />
+
+        <label for="expenseAmount">Amount:</label>
+        <input type="number" id="expenseAmount" name="expenseAmount" required />
+
+        <button type="submit">Add Expense</button>
+      </form>
+
+      <table id="expenseTable">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2024 Personal Finance Tracker</p>
+    </footer>
+    <script>
+      function displayExpenseTransactions() {
+        const expenseTableBody = document.querySelector("#expenseTable tbody");
+        expenseTableBody.innerHTML = "";
+
+        const userId = localStorage.getItem("userId");
+
+        const userExpenseTransactions =
+          JSON.parse(localStorage.getItem(`expenseTransactions_${userId}`)) ||
+          [];
+
+        userExpenseTransactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${transaction.description}</td>
+            <td>RS ${transaction.amount}</td>
+          `;
+          expenseTableBody.appendChild(row);
+        });
+      }
+
+      displayExpenseTransactions();
+
+      document
+        .getElementById("expenseForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const description = document
+            .getElementById("expenseDescription")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("expenseAmount").value.trim()
+          );
+
+          if (description && !isNaN(amount) && amount > 0) {
+            const userId = localStorage.getItem("userId");
+
+            const userExpenseTransactions =
+              JSON.parse(
+                localStorage.getItem(`expenseTransactions_${userId}`)
+              ) || [];
+
+            userExpenseTransactions.push({ description, amount });
+
+            localStorage.setItem(
+              `expenseTransactions_${userId}`,
+              JSON.stringify(userExpenseTransactions)
+            );
+
+            displayExpenseTransactions();
+
+            document.getElementById("expenseDescription").value = "";
+            document.getElementById("expenseAmount").value = "";
+          } else {
+            alert("Please enter valid description and amount.");
+          }
+        });
+    </script>
+  </body>
+</html>

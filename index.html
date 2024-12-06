@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Tracker - Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .overview {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .summary {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+      }
+
+      .summary-item {
+        text-align: center;
+      }
+
+      .graphs {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Personal Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Dashboard</a></li>
+          <li><a href="income.html">Income</a></li>
+          <li><a href="expense.html">Expenses</a></li>
+          <li><a href="reports.html">Reports</a></li>
+          <li><a href="dashboard_task.html">Task Management</a></li>
+          <li><a href="logout.html">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="overview" style="display: none">
+      <h2>Overview</h2>
+      <div class="summary">
+        <div class="summary-item">
+          <h3>Total Income</h3>
+          <span id="totalIncome">$0</span>
+        </div>
+        <div class="summary-item">
+          <h3>Total Expenses</h3>
+          <span id="totalExpenses">$0</span>
+        </div>
+      </div>
+      <div class="graphs">
+        <canvas id="incomeExpenseChart"></canvas>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2024 Personal Finance Tracker</p>
+    </footer>
+    <script>
+      const isLoggedIn = localStorage.getItem("isLoggedIn");
+      if (!isLoggedIn) {
+        window.location.href = "home.html";
+      } else {
+        document.querySelector(".overview").style.display = "block";
+
+        updateTotal();
+        updateChart();
+      }
+
+      function updateTotal() {
+        const userId = localStorage.getItem("userId");
+        const totalIncome = getTotal(userId, "incomeTransactions");
+        const totalExpenses = getTotal(userId, "expenseTransactions");
+
+        document.getElementById(
+          "totalIncome"
+        ).textContent = `RS ${totalIncome}`;
+        document.getElementById(
+          "totalExpenses"
+        ).textContent = `RS ${totalExpenses}`;
+      }
+
+      function getTotal(userId, transactionsKey) {
+        const transactions =
+          JSON.parse(localStorage.getItem(`${transactionsKey}_${userId}`)) ||
+          [];
+
+        return transactions.reduce(
+          (total, transaction) => total + transaction.amount,
+          0
+        );
+      }
+
+      function updateChart() {
+        const userId = localStorage.getItem("userId");
+
+        const totalIncome = getTotal(userId, "incomeTransactions");
+        const totalExpenses = getTotal(userId, "expenseTransactions");
+
+        const ctx = document
+          .getElementById("incomeExpenseChart")
+          .getContext("2d");
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Income", "Expenses"],
+            datasets: [
+              {
+                label: "Amount",
+                data: [totalIncome, totalExpenses],
+                backgroundColor: [
+                  "rgba(54, 162, 235, 0.2)",
+                  "rgba(255, 99, 132, 0.2)",
+                ],
+                borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

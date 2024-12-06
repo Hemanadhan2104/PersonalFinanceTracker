@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Management Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        text-align: center;
+      }
+
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 10px;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      canvas {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <nav>
+        <a href="#">Home</a>
+        <a href="create_task.html">Create Task</a>
+        <a href="task_list.html">Task List</a>
+        <a href="task_detail.html">Task-Detail</a>
+        <a href="index.html">Financial Tracker </a>
+        <a href="logout.html">Logout</a>
+      </nav>
+    </header>
+    <div class="container">
+      <h1>Task Management Dashboard</h1>
+      <div class="chart-container">
+        <canvas id="taskCompletionChart"></canvas>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; 2024 Task Manager</p>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+        if (!isLoggedIn) {
+          window.location.href = "home.html";
+        } else {
+          updateChart();
+
+          window.addEventListener("storage", function (event) {
+            if (
+              event.key === "completedTasks" ||
+              event.key === "pendingTasks"
+            ) {
+              updateChart();
+            }
+          });
+        }
+
+        function updateChart() {
+          const completedTasks =
+            JSON.parse(localStorage.getItem("completedTasks")) || 0;
+          const pendingTasks =
+            JSON.parse(localStorage.getItem("pendingTasks")) || 0;
+
+          const ctx = document
+            .getElementById("taskCompletionChart")
+            .getContext("2d");
+          const taskCompletionChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: ["Completed Tasks", "Pending Tasks"],
+              datasets: [
+                {
+                  label: "Task Completion Status",
+                  data: [completedTasks, pendingTasks],
+                  backgroundColor: [
+                    "rgba(75, 192, 192, 0.2)",
+                    "rgba(255, 99, 132, 0.2)",
+                  ],
+                  borderColor: [
+                    "rgba(75, 192, 192, 1)",
+                    "rgba(255, 99, 132, 1)",
+                  ],
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                yAxes: [
+                  {
+                    ticks: {
+                      beginAtZero: true,
+                    },
+                  },
+                ],
+              },
+            },
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles.css" />
+
+    <title>Personal Finance Tracker - Income</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 1rem;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      section.income {
+        padding: 2rem;
+      }
+
+      form label {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+
+      form input[type="text"],
+      form input[type="number"] {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      form button {
+        padding: 0.5rem 1rem;
+        background-color: #53a8b6;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+
+      form button:hover {
+        background-color: #555;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table th,
+      table td {
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Personal Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="income">
+      <h2>Income Tracking</h2>
+      <form id="incomeForm">
+        <label for="incomeDescription">Description:</label>
+        <input
+          type="text"
+          id="incomeDescription"
+          name="incomeDescription"
+          required
+        />
+
+        <label for="incomeAmount">Amount:</label>
+        <input type="number" id="incomeAmount" name="incomeAmount" required />
+
+        <button type="submit">Add Income</button>
+      </form>
+
+      <table id="incomeTable">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2024 Personal Finance Tracker</p>
+    </footer>
+
+    <script>
+      function displayIncomeTransactions() {
+        const incomeTableBody = document.querySelector("#incomeTable tbody");
+        incomeTableBody.innerHTML = "";
+
+        const userId = localStorage.getItem("userId");
+
+        const userIncomeTransactions =
+          JSON.parse(localStorage.getItem(`incomeTransactions_${userId}`)) ||
+          [];
+
+        userIncomeTransactions.forEach((transaction) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${transaction.description}</td>
+            <td>RS ${transaction.amount}</td>
+          `;
+          incomeTableBody.appendChild(row);
+        });
+      }
+
+      displayIncomeTransactions();
+
+      document
+        .getElementById("incomeForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const description = document
+            .getElementById("incomeDescription")
+            .value.trim();
+          const amount = parseFloat(
+            document.getElementById("incomeAmount").value.trim()
+          );
+          if (description && !isNaN(amount) && amount > 0) {
+            const userId = localStorage.getItem("userId");
+
+            const userIncomeTransactions =
+              JSON.parse(
+                localStorage.getItem(`incomeTransactions_${userId}`)
+              ) || [];
+
+            userIncomeTransactions.push({ description, amount });
+
+            localStorage.setItem(
+              `incomeTransactions_${userId}`,
+              JSON.stringify(userIncomeTransactions)
+            );
+
+            displayIncomeTransactions();
+
+            document.getElementById("incomeDescription").value = "";
+            document.getElementById("incomeAmount").value = "";
+          } else {
+            alert("Please enter valid description and amount.");
+          }
+        });
+    </script>
+  </body>
+</html>

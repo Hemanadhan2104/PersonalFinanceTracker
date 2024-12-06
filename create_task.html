@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Task</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      main {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+
+      form {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      input[type="text"],
+      textarea,
+      select,
+      input[type="datetime-local"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Create Task</h1>
+      <nav>
+        <ul>
+          <li><a href="dashboard_task.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <form id="create-task-form">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required /><br /><br />
+
+        <label for="description">Description:</label><br />
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          cols="50"
+        ></textarea
+        ><br /><br />
+
+        <label for="due-date">Due Date and Time:</label>
+        <input
+          type="datetime-local"
+          id="due-date"
+          name="due-date"
+          required
+        /><br /><br />
+
+        <label for="priority">Priority:</label>
+        <select id="priority" name="priority">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option></select
+        ><br /><br />
+
+        <button type="submit">Submit</button>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <p>&copy; 2024 Task Manager</p>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const createTaskForm = document.getElementById("create-task-form");
+
+        createTaskForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const title = document.getElementById("title").value;
+          const description = document.getElementById("description").value;
+          const dueDateTime = document.getElementById("due-date").value;
+          const priority = document.getElementById("priority").value;
+          const userId = localStorage.getItem("userId");
+
+          const taskId = generateTaskId();
+
+          const taskData = {
+            id: taskId,
+            userId: userId,
+            title: title,
+            description: description,
+            dueDateTime: dueDateTime,
+            priority: priority,
+          };
+
+          const allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          allTasks.push(taskData);
+          localStorage.setItem("tasks", JSON.stringify(allTasks));
+
+          window.location.href = "task_list.html";
+        });
+      });
+
+      function generateTaskId() {
+        return "_" + Math.random().toString(36).substr(2, 9);
+      }
+    </script>
+  </body>
+</html>

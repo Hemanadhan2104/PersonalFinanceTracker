@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Detail</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 10px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      main {
+        padding: 20px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        margin-right: 10px;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Task Detail</h1>
+      <nav>
+        <ul>
+          <li><a href="dashboard_task.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="task-list"></main>
+
+    <footer class="footer">
+      <p>&copy; 2024 Task Manager</p>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const taskListDiv = document.getElementById("task-list");
+        const userId = localStorage.getItem("userId");
+        let allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        const userTasks = allTasks.filter((task) => task.userId === userId);
+
+        if (userTasks.length === 0) {
+          taskListDiv.innerHTML = "<p>No tasks found.</p>";
+          return;
+        }
+
+        userTasks.forEach((task) => {
+          const taskDetailDiv = renderTask(task);
+          taskListDiv.appendChild(taskDetailDiv);
+        });
+      });
+
+      function renderTask(taskData) {
+        const taskDiv = document.createElement("div");
+        taskDiv.innerHTML = `
+        <h2>${taskData.title}</h2>
+        <p>Description: ${taskData.description}</p>
+        <p>Due Date: ${formatDateTime(taskData.dueDateTime)}</p>
+        <p>Priority: ${taskData.priority}</p>
+        <button class="edit-task-btn">Edit Task</button>
+        <button class="delete-task-btn">Delete Task</button>
+      `;
+
+        taskDiv
+          .querySelector(".edit-task-btn")
+          .addEventListener("click", function () {
+            editTask(taskData);
+          });
+
+        taskDiv
+          .querySelector(".delete-task-btn")
+          .addEventListener("click", function () {
+            deleteTask(taskData.id);
+          });
+
+        return taskDiv;
+      }
+
+      function formatDateTime(dateTimeString) {
+        const date = new Date(dateTimeString);
+        const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}-${date
+          .getDate()
+          .toString()
+          .padStart(2, "0")} ${date
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+        return formattedDate;
+      }
+
+      function editTask(taskData) {
+        const editedTitle = prompt("Enter new title:", taskData.title);
+        const editedDescription = prompt(
+          "Enter new description:",
+          taskData.description
+        );
+        const editedDueDateTime = prompt(
+          "Enter new due date (YYYY-MM-DD HH:mm):",
+          formatDateTime(taskData.dueDateTime)
+        );
+        const editedPriority = prompt("Enter new priority:", taskData.priority);
+
+        taskData.title = editedTitle;
+        taskData.description = editedDescription;
+        taskData.dueDateTime = editedDueDateTime;
+        taskData.priority = editedPriority;
+
+        const allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        const updatedTasks = allTasks.map((task) => {
+          if (task.id === taskData.id) {
+            return taskData;
+          } else {
+            return task;
+          }
+        });
+
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+        location.reload();
+      }
+
+      function deleteTask(taskId) {
+        if (confirm("Are you sure you want to delete this task?")) {
+          let allTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+          const updatedTasks = allTasks.filter((task) => task.id !== taskId);
+          localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+          location.reload();
+        }
+      }
+    </script>
+  </body>
+</html>

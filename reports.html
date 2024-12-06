@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal Finance Tracker - Reports</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .footer {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      header {
+        background-color: #53a8b6;
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+      }
+      h1 {
+        font-size: 1rem;
+      }
+
+      nav ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li {
+        display: inline;
+        margin-right: 1rem;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+      }
+
+      section.reports {
+        padding: 2rem;
+      }
+
+      .graphs {
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Personal Finance Tracker</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="reports">
+      <h2>Reports & Analytics</h2>
+      <div class="graphs">
+        <canvas id="incomeExpenseChart"></canvas>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>&copy; 2024 Personal Finance Tracker</p>
+    </footer>
+
+    <script>
+      function getIncomeData(userId) {
+        const incomeData = localStorage.getItem(`incomeTransactions_${userId}`);
+        return incomeData ? JSON.parse(incomeData) : [];
+      }
+
+      function getExpenseData(userId) {
+        const expenseData = localStorage.getItem(
+          `expenseTransactions_${userId}`
+        );
+        return expenseData ? JSON.parse(expenseData) : [];
+      }
+
+      function updateChart() {
+        const userId = localStorage.getItem("userId");
+        const ctx = document
+          .getElementById("incomeExpenseChart")
+          .getContext("2d");
+
+        const incomeExpenseChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Income", "Expenses"],
+            datasets: [
+              {
+                label: "Amount",
+                data: [
+                  getIncomeData(userId).reduce(
+                    (acc, curr) => acc + curr.amount,
+                    0
+                  ),
+                  getExpenseData(userId).reduce(
+                    (acc, curr) => acc + curr.amount,
+                    0
+                  ),
+                ],
+                backgroundColor: [
+                  "rgba(54, 162, 235, 0.2)",
+                  "rgba(255, 99, 132, 0.2)",
+                ],
+                borderColor: ["rgba(54, 162, 235, 1)", "rgba(255, 99, 132, 1)"],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+
+      window.addEventListener("load", updateChart);
+    </script>
+  </body>
+</html>
